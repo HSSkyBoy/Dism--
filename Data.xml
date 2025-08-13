@@ -464,6 +464,7 @@
           <Activate>
             <General RootPath="%SystemRoot%\SoftwareDistribution\Download"/>
           </Activate>
+          <!--Excluded 可以排除-->
         </Scan>
         <Scan>
           <Applicable>
@@ -912,6 +913,7 @@
             <FileExist FilePath="%SystemDrive%\AMD"/>
             <FileExist FilePath="%SystemDrive%\Intel"/>
             <FileExist FilePath="%SystemDrive%\NVIDIA"/>
+            <FileExist FilePath="%SystemDrive%\Prog"/>
           </Or>
         </Applicable>
         <Activate>
