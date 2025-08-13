@@ -496,6 +496,19 @@
 	  </ScanCollection>
 	</Item>
 
+	<Item Name="#Windows多语言资源缓存（by 闰月优葡）" Level="3">
+	  <Description>#Windows在初次安装或安装更新时自动生成的MUI多语言资源缓存，也可通过运行mcbuilder.exe手动生成。</Description>
+	  <Group>#缓存文件</Group>
+	  <Scan>
+		<Applicable>
+		  <FileExist FilePath="%SystemRoot%\rescache\"/>
+		</Applicable>
+		<Activate>
+		  <General RootPath="%SystemRoot%\rescache\"/>
+		</Activate>
+	  </Scan>
+	</Item>
+
 	<Item Name="#传递优化缓存" Level="2">
 	  <Description>#Win10开始使用传递优化（DeliveryOptimization）服务下载Windows更新和通用应用（UWP）产生的缓存文件。</Description>
 	  <Group>#缓存文件</Group>
