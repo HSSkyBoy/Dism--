@@ -1,58 +1,18 @@
-# Dism-Multi-language
-Dism++ resource files for supporting translation to various languages.
-The default language used for development is in Simplified Chinese.
+# Dism--
 
----
+一个修改自 [Dism++](http://www.chuyu.me/) 的项目，因为 Dism++ 的源代码并不开源，所以我们只能在公开版的基础上进行小幅度的修改
 
-## [Data.xml]
-Dism++ rules file which provides cleanup and optimization rules.
+<img width="1667" height="1041" alt="image" src="https://github.com/user-attachments/assets/bc97efe3-ec27-419e-beef-221c728406e0" />
 
----
 
-## Languages of Dism++ (Languages folder)
+## 修改的部分
 
-|  Name  | Language | Contributors
-| ------ | -------- | ------------
-| bg.xml | Bulgarian | Мартин Тайна, Pavel Belivakov
-| cs.xml | Czech | Richard Kahl
-| de.xml | German | franz@drwindows.de, [Henry2o1o](https://github.com/Henry2o1o)
-| en.xml | English | EMLVIRUS, Frag, Hexhu, raymai97, mdlgaofei, Mouri_Naruto, MikeGao, wondersnefu
-| es.xml | Spanish | Oleada, MS-PC2, nomemolesteis@gmail.com
-| fr.xml | French | JP.Sudret, P.Verdy
-| hu.xml | Hungarian | szuper
-| it.xml | Italian | Massimiliano F, Jumy
-| ja.xml | Japanese | 山形まり花
-| ko.xml | Korean | OldMac, 阿泽西
-| pl-PL.xml | Polish | romuald68@gmail.com, Bladius (KuchtaPC2015@outlook.com)
-| pt.xml | Portuguese | JNylson
-| ru.xml | Russian | Black Alex, Vasiliy Nasonov, virus, Vladimir, ZT
-| tr.xml | Turkish | Kaya Zeren
-| zh-Hans.xml | Chinese Simplified | mingkuang
-| zh-Hant.xml | Chinese Traditional | GT Wang (http://mkvq.blogspot.com) 、jamesfuh、月下独酌
+### 空间回收
 
----
+<img width="1667" height="1041" alt="image" src="https://github.com/user-attachments/assets/f4552419-1477-47fa-80bc-a101b90f49a7" />
 
-## [chuyu-analysis]
-Dism++崩溃统计后台。
-感谢 Reinforce-II。
+橙色为原本没有的内容，为此改版自行添加
 
----
-
-## [www.chuyu.me]
-Base path for the official Dism++ website and help documentation.
-Dism++官方网站以及帮助文档。
-
----
-
-## Languages of Dism++ website (www.chuyu.me folder)
-|  Name  | Language | Contributors
-| ------ | -------- | ------------
-| de.xml | German | franz@drwindows.de
-| en.xml | English | Frag, Hexhu
-| es.xml | Spanish | MS-PC2
-| fr.xml | French | P.Verdy
-| ja.xml | Japanese | 山形まり花
-| pt.xml | Portuguese | JNylson
-| ru.xml | Russian | AHOHNMYC
-| zh-Hans.xml | Chinese Simplified | mingkuang
-| zh-Hant.xml | Chinese Traditional | GT Wang (http://mkvq.blogspot.com)
+### 系统优化
+<img width="1667" height="1041" alt="image" src="https://github.com/user-attachments/assets/d71ff285-d1b4-4b44-8364-9c675ac8079a" />
+所有 By 闰月优葡 和其它创作者的修改，具体内容请自行比对
