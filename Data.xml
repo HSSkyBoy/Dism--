@@ -772,20 +772,36 @@
 
 	<!--备份文件-->
 
-	<Item Name="#Boot备份信息" Level="3">
-	  <Description>#修改启动信息后系统会创建备份，方便回滚。如果确定不需要还原则可以删除。</Description>
-	  <Group>#备份文件</Group>
-	  <Scan>
-		<Applicable>
-		  <FileExist FilePath="%SystemRoot%\pss"/>
-		</Applicable>
-		<Activate>
-		  <General RootPath="%SystemRoot%" Flags="Directory">
-			<Query>pss</Query>
-		  </General>
-		</Activate>
-	  </Scan>
-	</Item>
+    <Item Name="#Boot备份信息" Level="3">
+      <Description>#修改启动信息后系统会创建备份，方便回滚。如果确定不需要还原则可以删除。</Description>
+      <Group>#备份文件</Group>
+      <Scan>
+        <Applicable>
+          <FileExist FilePath="%SystemRoot%\pss"/>
+        </Applicable>
+        <Activate>
+          <General RootPath="%SystemRoot%" Flags="Directory">
+            <Query>pss</Query>
+          </General>
+        </Activate>
+      </Scan>
+    </Item>
+
+    <Item Name="#硬链接备份" Level="2">
+      <Description>#硬链接合并功能留下的备份文件。</Description>
+      <Warning>#请你确保硬链接合并后系统正常，删除此文件将导致硬链接合并操作无法回滚！</Warning>
+      <Group>#备份文件</Group>
+      <Scan>
+        <Applicable>
+          <FileExist FilePath="%SystemDrive%\$HardLinkBackup"/>
+        </Applicable>
+        <Activate>
+          <General RootPath="%SystemDrive%" Flags="Directory">
+            <Query>$HardLinkBackup</Query>
+          </General>
+        </Activate>
+      </Scan>
+    </Item>
 
 	<Item Name="#会声会影素材存档" Level="2">
 	  <!--2016年1月8日 16:33添加-->
@@ -874,6 +890,8 @@
 		  </General>
 		  <General RootPath="%SystemDrive%\Logs\"/>
 		  <General RootPath="%SystemRoot%\Logs\"/>
+		  <General RootPath="%SystemRoot%\Performance\WinSAT\DataStore\"/>
+          <General RootPath="*\System Volume Information\Chkdsk"/>
 		  <General RootPath="%ProgramData%\USOShared\Logs"/>
 		  <General RootPath="%System%\WDI\LogFiles\*"/>
 		  <General RootPath="%System%\LogFiles\*"/>
@@ -942,6 +960,7 @@
 			<FileExist FilePath="%SystemDrive%\AMD"/>
 			<FileExist FilePath="%SystemDrive%\Intel"/>
 			<FileExist FilePath="%SystemDrive%\NVIDIA"/>
+			<FileExist FilePath="%SystemDrive%\Prog"/>
 		  </Or>
 		</Applicable>
 		<Activate>
@@ -1141,50 +1160,61 @@
 	  </ScanCollection>
 	</Item>
 
-	<Item Name="#IDM临时文件（by MS-PC2）" Level="2">
-	  <Description>#Internet Download Manager临时下载文件。</Description>
-	  <Warning>#清理IDM临时文件可能导致正在下载的任务需要重新下载！</Warning>
-	  <Group>#临时文件</Group>
-	  <Scan>
-		<Applicable>
-		  <ImageFlags>1</ImageFlags>
-		  <RegExist Key="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Internet Download Manager" Wow64="True"/>
-		  <RegExist Key="HKEY_CURRENT_USER\Software\DownloadManager" Value="TempPath"/>
-		</Applicable>
-		<Activate>
-		  <General RootPath="?GetRegSz(HKEY_CURRENT_USER\Software\DownloadManager,TempPath,False)DwnlData\"/>
-		</Activate>
-	  </Scan>
-	</Item>
+    <Item Name="#IDM临时文件（by MS-PC2）" Level="2">
+      <Description>#Internet Download Manager临时下载文件。</Description>
+      <Warning>#清理IDM临时文件可能导致正在下载的任务需要重新下载！</Warning>
+      <Group>#临时文件</Group>
+      <Scan>
+        <Applicable>
+          <ImageFlags>1</ImageFlags>
+          <RegExist Key="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Internet Download Manager" Wow64="True"/>
+          <RegExist Key="HKEY_CURRENT_USER\Software\DownloadManager" Value="TempPath"/>
+        </Applicable>
+        <Activate>
+          <General RootPath="?GetRegSz(HKEY_CURRENT_USER\Software\DownloadManager,TempPath,False)DwnlData\"/>
+        </Activate>
+      </Scan>
+    </Item>
+    
+    <!--存在风险-->
+    <Item Name="#CompactOs（较慢）" Level="0">
+      <Description>#对单纯读取的文件进行哈夫曼压缩，在不影响性能的情况下，显著减少系统体积。特别感谢矿工以及所有Compact团队成员无私的支持与帮助。</Description>
+      <Warning>#使用后可能导致某些程序无法正常运行甚至让系统无法启动，如果使用后出现问题，可以在PE中点击 恢复功能-->撤销Compact。</Warning>
+      <Group>#系统相关</Group>
+      <Scan Work="30">
+        <Applicable>
+          <Not>
+            <ImageFlags>4</ImageFlags>
+          </Not>
+          <Or>
+            <Or>
+              <!--Windows 7/8直接显示-->
+              <OSVersion>6.1</OSVersion>
+              <OSVersion>6.2</OSVersion>
+            </Or>
+            <And>
+              <!--6.3以上平台必须存在Wof.sys不然不工作-->
+              <OSVersion  Compare=">=">6.3</OSVersion>
+              <FileExist FilePath="%System%\drivers\wof.sys"/>
+            </And>
+          </Or>
+        </Applicable>
+        <Activate>
+          <Custom ProcName="DismCompactOs"/>
+        </Activate>
+      </Scan>
+    </Item>
 
-	<!--存在风险-->
-	<Item Name="#CompactOS（较慢）" Level="0">
-	  <Description>#对单纯读取的文件进行哈夫曼压缩，在不影响性能的情况下，显著减少系统体积。特别感谢矿工以及所有Compact团队成员无私的支持与帮助！</Description>
-	  <Warning>#使用后可能导致某些程序无法正常运行甚至让系统无法启动，如果使用后出现问题，可以在PE中启动Dism++并点击 恢复功能-->撤销Compact。</Warning>
-	  <Group>#系统相关</Group>
-	  <Scan Work="30">
-		<Applicable>
-		  <Not>
-			<ImageFlags>4</ImageFlags>
-		  </Not>
-		  <Or>
-			<Or>
-			  <!--Win7/8直接显示-->
-			  <OSVersion>6.1</OSVersion>
-			  <OSVersion>6.2</OSVersion>
-			</Or>
-			<And>
-			  <!--Win8.1以上平台必须存在Wof.sys文件不然无法生效-->
-			  <OSVersion Compare=">=">6.3</OSVersion>
-			  <FileExist FilePath="%System%\drivers\wof.sys"/>
-			</And>
-		  </Or>
-		</Applicable>
-		<Activate>
-		  <Custom ProcName="DismCompactOs"/>
-		</Activate>
-	  </Scan>
-	</Item>
+    <Item Name="#硬链接合并（较慢）" Level="0">
+      <Description>#使用利用NTFS硬链接特性合并所有文件内容相同的文件。</Description>
+      <Warning>#某些文件被硬链接合并后可能导致相关功能无法正常使用。</Warning>
+      <Group>#系统相关</Group>
+      <Scan Work="40">
+        <Activate>
+          <Custom ProcName="DismHardLinkMerge"/>
+        </Activate>
+      </Scan>
+    </Item>
 
 	<Item Name="#过期驱动" Level="0">
 	  <Description>#删除计算机中不使用的驱动程序以节省驱动存储池空间。</Description>
@@ -1394,7 +1424,6 @@
 			<General RootPath="%SystemDrive%\Program Files (x86)\Microsoft SQL Server\*\Setup Bootstrap">
 			  <Query>Update Cache</Query>
 			</General>
-			<!--以下规则 撕裂五维空间 在2016-04-11提供，等待验证稳定性-->
 			<General RootPath="%SystemDrive%\Program Files\Microsoft SQL Server\*\Setup Bootstrap\Log"/>
 			<General RootPath="%SystemDrive%\Program Files (x86)\Microsoft SQL Server\*\Setup Bootstrap\Log"/>
 			<General RootPath="%SystemDrive%\Program Files\Microsoft SQL Server\*\Setup Bootstrap">
@@ -2891,6 +2920,7 @@
 			</Activate>
 		  </Dropdown>
 		  <Dropdown Name="#从不通知">
+		  <Warning>#此选项将导致计算机面临安全风险！</Warning>
 			<Applicable>
 			  <Or>
 				<RegExist Key="HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" Value="EnableLUA" Type="REG_DWORD" Data="0"/>
@@ -3385,6 +3415,7 @@
 			</Applicable>
 		  </State>
 		  <True>
+            <Warning>#关闭Windows Defender后可提高计算机响应速度，但是也将增加电脑被攻击的几率！</Warning>
 			<Activate>
 			  <RegWrite Key="HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" Value="DisableAntiSpyware" Type="REG_DWORD" Data="1"/>
 			  <RegWrite Key="HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection" Value="DisableRealtimeMonitoring" Type="REG_DWORD" Data="1"/>
@@ -3418,7 +3449,7 @@
 			  </And>
 			</Applicable>
 		  </State>
-		  <True>
+		  <True><Warning>#关闭Windows Defender后可提高计算机响应速度，但是也将增加电脑被攻击的几率！</Warning>
 			<Activate>
 				<RegWrite Key="HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" Value="DisableAntiSpyware" Type="REG_DWORD" Data="1"/>
 				<RegWrite Key="HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender" Value="DisableRealtimeMonitoring" Type="REG_DWORD" Data="1"/>
@@ -3692,24 +3723,64 @@
 		  </False>
 		</Current>
 
-		<Default>
-		  <State>
-			<Applicable>
-			  <RegExist Key="HKEY_USERS\DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" Value="SoftLandingEnabled" Type="REG_DWORD" Data="0"/>
-			</Applicable>
-		  </State>
-		  <True>
-			<Activate>
-			  <RegWrite Key="HKEY_USERS\DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" Value="SoftLandingEnabled" Type="REG_DWORD" Data="0"/>
-			</Activate>
-		  </True>
-		  <False>
-			<Activate>
-			  <RegWrite Key="HKEY_USERS\DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" Value="SoftLandingEnabled" Type="REG_DWORD" Data="1"/>
-			</Activate>
-		  </False>
-		</Default>
-	  </Item>
+        <Default>
+          <State>
+            <Applicable>
+              <RegExist Key="HKEY_USERS\DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" Value="SoftLandingEnabled" Type="REG_DWORD" Data="0"/>
+            </Applicable>
+          </State>
+          <True>
+            <Activate>
+              <RegWrite Key="HKEY_USERS\DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" Value="SoftLandingEnabled" Type="REG_DWORD" Data="0"/>
+            </Activate>
+          </True>
+          <False>
+            <Activate>
+              <RegWrite Key="HKEY_USERS\DEFAULT\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" Value="SoftLandingEnabled" Type="REG_DWORD" Data="1"/>
+            </Activate>
+          </False>
+        </Default>
+      </Item>
+
+      <Item Type="CheckBox" Name="#关闭“突出显示新安装的程序”（by 溯汐潮）">
+        <Current>
+          <State>
+            <Applicable>
+              <RegExist Key="HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" Value="Start_NotifyNewApps" Type="REG_DWORD" Data="0"/>
+            </Applicable>
+          </State>
+          <True>
+            <Activate>
+              <RegWrite Key="HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" Value="Start_NotifyNewApps" Type="REG_DWORD" Data="0"/>
+              <ExplorerNotify Type="Custom" msg="111" wParam="#A220" Explorer="True"/>
+            </Activate>
+          </True>
+          <False>
+            <Activate>
+              <RegWrite Key="HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" Value="Start_NotifyNewApps" Type="REG_DWORD" Data="1"/>
+              <ExplorerNotify Type="Custom" msg="111" wParam="#A220" Explorer="True"/>
+            </Activate>
+          </False>
+        </Current>
+
+        <Default>
+          <State>
+            <Applicable>
+              <RegExist Key="HKEY_USERS\DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" Value="Start_NotifyNewApps" Type="REG_DWORD" Data="0"/>
+            </Applicable>
+          </State>
+          <True>
+            <Activate>
+              <RegWrite Key="HKEY_USERS\DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" Value="Start_NotifyNewApps" Type="REG_DWORD" Data="0"/>
+            </Activate>
+          </True>
+          <False>
+            <Activate>
+              <RegWrite Key="HKEY_USERS\DEFAULT\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" Value="Start_NotifyNewApps" Type="REG_DWORD" Data="1"/>
+            </Activate>
+          </False>
+        </Default>
+      </Item>
 
 	  <Item Type="CheckBox" Name="#禁止自动安装推荐的应用程序（by IT之家）">
 		<Applicable>
